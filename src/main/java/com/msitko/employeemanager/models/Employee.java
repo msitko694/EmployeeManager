@@ -283,19 +283,18 @@ public class Employee {
 	 * 
 	 * @return Returns age of employee
 	 */
-	public int getAge() {
+	public int getAge(Calendar actualDate) {
 
 		Calendar calBirthDate = new GregorianCalendar();
 		calBirthDate.setTime(getBirthDate());
-		int age = Calendar.getInstance().get(Calendar.YEAR)
+		int age = actualDate.get(Calendar.YEAR)
 				- calBirthDate.get(Calendar.YEAR);
-		if (calBirthDate.get(Calendar.MONTH) > Calendar.getInstance().get(
-				Calendar.MONTH)) {
+		if (calBirthDate.get(Calendar.MONTH) > actualDate.get(Calendar.MONTH)) {
 			age--;
-		} else if (calBirthDate.get(Calendar.MONTH) == Calendar.getInstance()
+		} else if (calBirthDate.get(Calendar.MONTH) == actualDate
 				.get(Calendar.MONTH)) {
-			if (calBirthDate.get(Calendar.DAY_OF_MONTH) > Calendar
-					.getInstance().get(Calendar.DAY_OF_MONTH)) {
+			if (calBirthDate.get(Calendar.DAY_OF_MONTH) > actualDate
+					.get(Calendar.DAY_OF_MONTH)) {
 				age--;
 			}
 		}
@@ -323,11 +322,12 @@ public class Employee {
 		SimpleDateFormat format = new SimpleDateFormat("dd/mm/yyyy");
 		String str = "ID: " + id + "\n" + "Pesel: " + genderName + "\n"
 				+ "Pesel: " + String.valueOf(pesel) + "\n" + "Imię: " + name
-				+ " \n" + "Nazwisko: " + surname + "\n" + "Wiek: " + getAge()
-				+ "\n" + "Data urodzenia: " + format.format(birthDate) + "\n"
-				+ "Numer telefonu: " + getPhoneNumber() + "\n"
-				+ "Adres email: " + getEmailAddress() + "\n"
-				+ "Stawka godzinowa: " + Float.toString(ratePerHour) + " \n";
+				+ " \n" + "Nazwisko: " + surname + "\n" + "Wiek: "
+				+ getAge(Calendar.getInstance()) + "\n" + "Data urodzenia: "
+				+ format.format(birthDate) + "\n" + "Numer telefonu: "
+				+ getPhoneNumber() + "\n" + "Adres email: " + getEmailAddress()
+				+ "\n" + "Stawka godzinowa: " + Float.toString(ratePerHour)
+				+ " \n";
 
 		return str;
 	}
@@ -358,26 +358,12 @@ public class Employee {
 
 	public void validatePhoneNumber(String phoneNumber)
 			throws InvalidPhoneNumberException {
-
-		char[] allowedChars = { '1', '2', '3', '4', '5', '6', '7', '8', '9',
-				'0', ' ', '(', ')', '+' };
-
-		char[] cPhoneNumber = new char[phoneNumber.length()];
-		phoneNumber.getChars(0, phoneNumber.length(), cPhoneNumber, 0);
-
-		for (int i = 0; i < phoneNumber.length(); i++) {
-
-			boolean isCorrect = false;
-			for (char it : allowedChars) {
-
-				if (it == cPhoneNumber[i]) {
-					isCorrect = true;
-				}
-			}
-			if (!isCorrect) {
-				throw new InvalidPhoneNumberException(
-						"Podano nieprawidłowy numer telefonu");
-			}
+		Pattern phonePatter = Pattern
+				.compile("^[+]??[\\-()\\s0-9]+$");
+		Matcher phoneMatcher = phonePatter.matcher(phoneNumber);
+		if (!phoneMatcher.find()) {
+			throw new InvalidPhoneNumberException("Podany email jest nieprawidłowy");
 		}
 	}
+
 }

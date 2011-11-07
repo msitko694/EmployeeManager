@@ -4,7 +4,7 @@
  */
 package com.msitko.employeemanager.models.tests;
 
-import java.util.Date;
+import java.util.GregorianCalendar;
 
 import com.msitko.employeemanager.exceptions.InvalidEmailException;
 import com.msitko.employeemanager.exceptions.InvalidPeselException;
@@ -46,77 +46,107 @@ public class EmployeeTest {
 	}
 
 	/**
-	 * Test of getAge method, of class Employee
+	 * Test of getAge method, of class Employee if actual date is one day before
+	 * Employee birthdays
 	 */
 	@Test
-	public void testGetAge() {
-		System.out.println("getAge");
+	public void testGetAgeOneDayBeforeBirthdays() {
+		// given
 		Employee empl = new Employee();
-		Calendar birthDate = Calendar.getInstance();
-		birthDate.set(Calendar.YEAR, 1990);
-		Date test = birthDate.getTime();
-		empl.setBirthDate(test);
-		int age1 = empl.getAge();
-		birthDate.set(Calendar.DAY_OF_MONTH,
-				Calendar.getInstance().get(Calendar.DAY_OF_MONTH) + 1);
-		test = birthDate.getTime();
-		empl.setBirthDate(test);
-		int age2 = empl.getAge();
-		assertEquals(age1, age2 + 1);
-
+		GregorianCalendar birthCalendar = new GregorianCalendar(1990, 2, 14);
+		empl.setBirthDate(birthCalendar.getTime());
+		GregorianCalendar mockActualDate = new GregorianCalendar(2010, 2, 13);
+		// when
+		int age = empl.getAge(mockActualDate);
+		// then
+		assertEquals(19, age);
 	}
 
 	/**
-	 * Test of validatePesel method, of class Employee.
+	 * Test of getAge method, of class Employee if actual date is at Employee
+	 * birthdays
 	 */
 	@Test
-	public void testValidatePesel() throws Exception {
-		System.out.println("validatePesel");
-		long pesel = 90021416955L;
-		InvalidPeselException testedException = null;
-		Employee instance = new Employee();
-		try {
-			instance.validatePesel(pesel);
-		} catch (InvalidPeselException ex) {
-			testedException = ex;
-		}
-
-		assertNull(testedException);
-
-		pesel = 12345678955L;
-
-		try {
-			instance.validatePesel(pesel);
-		} catch (InvalidPeselException ex) {
-			testedException = ex;
-		}
-
-		assertNotNull(testedException);
-
+	public void testGetAgeAtBirthdays() {
+		// given
+		Employee empl = new Employee();
+		GregorianCalendar birthCalendar = new GregorianCalendar(1990, 2, 14);
+		empl.setBirthDate(birthCalendar.getTime());
+		GregorianCalendar mockActualDate = new GregorianCalendar(2010, 2, 14);
+		// when
+		int age = empl.getAge(mockActualDate);
+		// then
+		assertEquals(20, age);
 	}
 
+	/**
+	 * Test of setPesel method with valid pesel.
+	 */
 	@Test
-	public void testValidatePhoneNumber() {
-		System.out.println("validatePhoneNumber");
+	public void testSettingValidPesel() {
+		// given
 		Employee instance = new Employee();
-		String phoneNumber1 = "+(32) 44444";
-
+		long pesel = 90021416955L;
 		try {
-			instance.validatePhoneNumber(phoneNumber1);
-		} catch (InvalidPhoneNumberException e) {
-
-			fail("Shouldn't throw exception");
-		}
-
-		String phoneNumber2 = "+(32a) 44444";
-
-		try {
-			instance.validatePhoneNumber(phoneNumber2);
-			fail("Should throw exception");
-		} catch (InvalidPhoneNumberException e) {
-
+			// when
+			instance.setPesel(pesel);
+			// then
+		} catch (InvalidPeselException ex) {
+			fail();
 		}
 	}
+
+	/**
+	 * Test of setPesel method with invalid pesel.
+	 */
+	@Test
+	public void testSettingInvalidPesel() {
+		// given
+		Employee instance = new Employee();
+		long pesel = 90021416956L;
+		try {
+			// when
+			instance.setPesel(pesel);
+			// then
+			fail();
+		} catch (InvalidPeselException ex) {
+		}
+	}
+
+	/**
+	 * Test of setPhone method with valid phone argument.
+	 */
+	@Test
+	public void testSettingValidPhone() {
+		// given
+		Employee instance = new Employee();
+		String phoneNumber = "+(48) 32 421 312";
+		try {
+			// when
+			instance.setPhoneNumber(phoneNumber);
+			// then
+		} catch (InvalidPhoneNumberException ex) {
+			fail();
+		}
+	}
+
+	/**
+	 * Test of setPhone method with invalid phone argument.
+	 */
+	@Test
+	public void testSettingInvalidPhone() {
+		// given
+		Employee instance = new Employee();
+		String phoneNumber = "+(48) 32a 421 312";
+		try {
+			// when
+			instance.setPhoneNumber(phoneNumber);
+			// then
+			fail();
+		} catch (InvalidPhoneNumberException ex) {
+		}
+	}
+	
 
 	@Test
 	public void testGettingEmailAddress() throws InvalidEmailException {
@@ -132,7 +162,7 @@ public class EmployeeTest {
 	}
 
 	@Test
-	public void testEmailHasTooLongEnddomain() throws InvalidEmailException {
+	public void testEmailHasTooLongEnddomain() {
 		// given
 		Employee instance = new Employee();
 		String arg = "tested.email@te4st.test.pltoolongdomain";
@@ -146,7 +176,7 @@ public class EmployeeTest {
 	}
 
 	@Test
-	public void testEmailContainIllegalChars() throws InvalidEmailException {
+	public void testEmailContainIllegalChars() {
 		// given
 		Employee instance = new Employee();
 		String arg = "te\\\'sted.email@te4st.test.pl";
