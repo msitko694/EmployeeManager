@@ -9,9 +9,9 @@ import java.util.GregorianCalendar;
 import com.msitko.employeemanager.exceptions.InvalidEmailException;
 import com.msitko.employeemanager.exceptions.InvalidPeselException;
 import com.msitko.employeemanager.exceptions.InvalidPhoneNumberException;
+import com.msitko.employeemanager.exceptions.ParseGenderException;
 import com.msitko.employeemanager.models.Employee;
 
-import java.util.Calendar;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -85,11 +85,11 @@ public class EmployeeTest {
 	@Test
 	public void testSettingValidPesel() {
 		// given
-		Employee instance = new Employee();
+		Employee empl = new Employee();
 		long pesel = 90021416955L;
 		try {
 			// when
-			instance.setPesel(pesel);
+			empl.setPesel(pesel);
 			// then
 		} catch (InvalidPeselException ex) {
 			fail();
@@ -102,11 +102,11 @@ public class EmployeeTest {
 	@Test
 	public void testSettingInvalidPesel() {
 		// given
-		Employee instance = new Employee();
+		Employee empl = new Employee();
 		long pesel = 90021416956L;
 		try {
 			// when
-			instance.setPesel(pesel);
+			empl.setPesel(pesel);
 			// then
 			fail();
 		} catch (InvalidPeselException ex) {
@@ -119,11 +119,11 @@ public class EmployeeTest {
 	@Test
 	public void testSettingValidPhone() {
 		// given
-		Employee instance = new Employee();
+		Employee empl = new Employee();
 		String phoneNumber = "+(48) 32 421 312";
 		try {
 			// when
-			instance.setPhoneNumber(phoneNumber);
+			empl.setPhoneNumber(phoneNumber);
 			// then
 		} catch (InvalidPhoneNumberException ex) {
 			fail();
@@ -136,26 +136,25 @@ public class EmployeeTest {
 	@Test
 	public void testSettingInvalidPhone() {
 		// given
-		Employee instance = new Employee();
+		Employee empl = new Employee();
 		String phoneNumber = "+(48) 32a 421 312";
 		try {
 			// when
-			instance.setPhoneNumber(phoneNumber);
+			empl.setPhoneNumber(phoneNumber);
 			// then
 			fail();
 		} catch (InvalidPhoneNumberException ex) {
 		}
 	}
-	
 
 	@Test
 	public void testGettingEmailAddress() throws InvalidEmailException {
 		// given
-		Employee instance = new Employee();
+		Employee empl = new Employee();
 		String arg = "tested.email@te4st.testtest.pl";
-		instance.setEmailAddress(arg);
+		empl.setEmailAddress(arg);
 		// when
-		String gotEmail = instance.getEmailAddress();
+		String gotEmail = empl.getEmailAddress();
 		// then
 		assertEquals(arg, gotEmail);
 
@@ -164,11 +163,11 @@ public class EmployeeTest {
 	@Test
 	public void testEmailHasTooLongEnddomain() {
 		// given
-		Employee instance = new Employee();
+		Employee empl = new Employee();
 		String arg = "tested.email@te4st.test.pltoolongdomain";
 		try {
 			// when
-			instance.setEmailAddress(arg);
+			empl.setEmailAddress(arg);
 			// then
 			fail();
 		} catch (InvalidEmailException ex) {
@@ -178,14 +177,108 @@ public class EmployeeTest {
 	@Test
 	public void testEmailContainIllegalChars() {
 		// given
-		Employee instance = new Employee();
+		Employee empl = new Employee();
 		String arg = "te\\\'sted.email@te4st.test.pl";
 		try {
 			// when
-			instance.setEmailAddress(arg);
+			empl.setEmailAddress(arg);
 			// then
 			fail();
 		} catch (InvalidEmailException ex) {
 		}
 	}
+
+	@Test
+	public void testGetBirthDate() {
+		// given
+		Employee empl = new Employee();
+		java.util.Date passedDate = (new GregorianCalendar(1990, 2, 14))
+				.getTime();
+		empl.setBirthDate(passedDate);
+		// when
+		java.util.Date returnedDate = empl.getBirthDate();
+		// then
+		assertEquals(passedDate, returnedDate);
+	}
+
+	@Test
+	public void testGetEmail() throws InvalidEmailException {
+		// given
+		Employee empl = new Employee();
+		String passedEmail = "testedemail@gmail.com";
+		empl.setEmailAddress(passedEmail);
+		// when
+		String returnedEmail = empl.getEmailAddress();
+		// then
+		assertEquals(passedEmail, returnedEmail);
+	}
+
+	@Test
+	public void testGetGender() throws ParseGenderException {
+		// given
+		Employee empl = new Employee();
+		empl.setGender('k');
+		// when
+		Employee.Gender gend = empl.getGender();
+		// then
+		assertEquals(Employee.Gender.FEMALE, gend);
+	}
+
+	@Test
+	public void testGetName() {
+		// given
+		Employee empl = new Employee();
+		String passedName = "Marcin";
+		empl.setName(passedName);
+		// when;
+		String returnedName = empl.getName();
+		// then
+		assertEquals(passedName, returnedName);
+	}
+
+	@Test
+	public void testGetSurname() {
+		// given
+		Employee instance = new Employee();
+		instance.setSurname("Kowalski");
+		// when
+		String resultSurname = instance.getSurname();
+		// then
+		assertEquals("Kowalski", resultSurname);
+	}
+
+	@Test
+	public void testGetPesel() throws InvalidPeselException {
+		// given
+		Employee empl = new Employee();
+		long passedPesel = 90021416955L;
+		empl.setPesel(passedPesel);
+		// when
+		long returnedPesel = empl.getPesel();
+		// then
+		assertEquals(passedPesel, returnedPesel);
+	}
+
+	@Test
+	public void testGetRatePerHour() {
+		// given
+		Employee instance = new Employee();
+		instance.setRatePerHour(45.123456f);
+		// when
+		float resultPerHour = instance.getRatePerHour();
+		// then
+		assertEquals(45.123456f, resultPerHour, 0.001);
+	}
+
+	@Test
+	public void testGetId() {
+		// given
+		Employee instance = new Employee();
+		instance.setId(4);
+		// when
+		int resultId = instance.getId();
+		// then
+		assertEquals(4, resultId);
+	}
+
 }
