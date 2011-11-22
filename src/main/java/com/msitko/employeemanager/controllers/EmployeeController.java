@@ -5,7 +5,7 @@
 package com.msitko.employeemanager.controllers;
 
 import com.msitko.employeemanager.views.*;
-import com.msitko.employeemanager.models.*;
+import com.msitko.employeemanager.dataaccess.EmployeeRepository;
 import java.awt.event.*;
 
 /**
@@ -50,7 +50,7 @@ public class EmployeeController {
 	/**
 	 * reference to model managing by controller
 	 */
-	private EmployeeManager employeeModel;
+	private EmployeeRepository employeeModel;
 
 	/**
 	 * @param employeeView
@@ -59,7 +59,7 @@ public class EmployeeController {
 	 *            - reference to assigned model
 	 */
 	public EmployeeController(EmployeeView employeeView,
-			EmployeeManager employeeModel) {
+			EmployeeRepository employeeModel) {
 		this.employeeView = employeeView;
 		this.employeeModel = employeeModel;
 

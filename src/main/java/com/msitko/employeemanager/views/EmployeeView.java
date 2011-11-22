@@ -5,6 +5,7 @@
 package com.msitko.employeemanager.views;
 
 import com.msitko.employeemanager.controllers.EmployeeController;
+import com.msitko.employeemanager.dataaccess.EmployeeRepository;
 import com.msitko.employeemanager.events.*;
 import com.msitko.employeemanager.exceptions.InvalidEmailException;
 import com.msitko.employeemanager.exceptions.InvalidPeselException;
@@ -12,7 +13,6 @@ import com.msitko.employeemanager.exceptions.InvalidPhoneNumberException;
 import com.msitko.employeemanager.exceptions.NoEmployeeException;
 import com.msitko.employeemanager.exceptions.ParseGenderException;
 import com.msitko.employeemanager.models.Employee;
-import com.msitko.employeemanager.models.EmployeeManager;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -194,7 +194,7 @@ public class EmployeeView extends EventSource {
 	 * @param employeeModel
 	 *            Reference to a model on which view will work
 	 */
-	public void editEmployeeView(EmployeeManager employeeModel) {
+	public void editEmployeeView(EmployeeRepository employeeModel) {
 
 		InputStreamReader isr = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(isr);
@@ -226,7 +226,7 @@ public class EmployeeView extends EventSource {
 	 * @param employeeModel
 	 *            Reference to a model on which view will work
 	 */
-	public void deleteEmployeeView(EmployeeManager employeeModel) {
+	public void deleteEmployeeView(EmployeeRepository employeeModel) {
 
 		System.out.println("Podaj ID pracownika, którego mam usunąć: ");
 		int id = 0;
@@ -253,7 +253,7 @@ public class EmployeeView extends EventSource {
 	 * @param employeeModel
 	 *            Reference to a model on which view will work
 	 */
-	public void showEmployeesView(EmployeeManager employeeModel) {
+	public void showEmployeesView(EmployeeRepository employeeModel) {
 		for (Employee it : employeeModel.getEmplList()) {
 			System.out.println(it.toString());
 		}
@@ -265,7 +265,7 @@ public class EmployeeView extends EventSource {
 	 * @param employeeModel
 	 *            Reference to a model on which view will work
 	 */
-	public void addEmployeeView(EmployeeManager employeeModel) {
+	public void addEmployeeView(EmployeeRepository employeeModel) {
 		Employee newEmpl = new Employee();
 		fillEmployeeWithData(newEmpl);
 		employeeModel.addEmployee(newEmpl);

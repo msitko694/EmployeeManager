@@ -4,6 +4,7 @@
  */
 package com.msitko.employeemanager.models;
 
+import com.msitko.employeemanager.dataaccess.EmployeeRepository;
 import com.msitko.employeemanager.exceptions.InvalidEmailException;
 import com.msitko.employeemanager.exceptions.InvalidPeselException;
 import com.msitko.employeemanager.exceptions.InvalidPhoneNumberException;
@@ -20,7 +21,7 @@ import java.util.regex.Pattern;
 /**
  * Class is used to represent a data of single employee.
  * 
- * @see EmployeeManager
+ * @see EmployeeRepository
  * 
  * @author Marcin Sitko
  * @version 1.0
@@ -63,7 +64,7 @@ public class Employee {
 			throw new InvalidEmailException("Podany email jest nieprawidłowy");
 		}
 	}
-
+	
 	/**
 	 * @return the emailAddress
 	 */
@@ -99,6 +100,7 @@ public class Employee {
 		surname = "";
 		phoneNumber = "";
 		emailAddress = "";
+		gender = Gender.MALE;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 package com.msitko.employeemanager;
 
 import com.msitko.employeemanager.controllers.EmployeeController;
-import com.msitko.employeemanager.models.EmployeeManager;
+import com.msitko.employeemanager.dataaccess.EmployeeRepository;
 import com.msitko.employeemanager.views.EmployeeView;
 
 /**
@@ -28,7 +28,7 @@ public class EmployeeApplication {
 					+ ex.getLocalizedMessage() + "\n" + ex.getMessage());
 		}
 		EmployeeView mainView = new EmployeeView();
-		EmployeeManager mainModel = new EmployeeManager(fileName);
+		EmployeeRepository mainModel = new EmployeeRepository(fileName);
 		@SuppressWarnings("unused")
 		EmployeeController mainContr = new EmployeeController(mainView,
 				mainModel);
