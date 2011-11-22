@@ -32,6 +32,5 @@ public class EmployeeApplication {
 		@SuppressWarnings("unused")
 		EmployeeController mainContr = new EmployeeController(mainView,
 				mainModel);
-
 	}
 }
