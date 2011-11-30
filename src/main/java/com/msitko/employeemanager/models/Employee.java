@@ -27,10 +27,38 @@ import java.util.regex.Pattern;
  * @version 1.0
  */
 public class Employee {
-
+	/**
+	 * Enum class describe gender of Employee.
+	 * 
+	 * @author Marcin Sitko
+	 * @version 1.0
+	 */
 	public enum Gender {
 		MALE, FEMALE
 	}
+
+	/**
+	 * Enum class containt unique number assigned to each data field so it can
+	 * be easy used in switch instructions.
+	 * 
+	 * @author Marcin Sitko
+	 * @version 1.0
+	 */
+	public static enum Field {
+		GENDER(0), ID(1), PESEL(2), NAME(3), SURNAME(4), PHONE_NUMBER(5), EMAIL(
+				6), RATE_PER_HOUR(7), BIRTH_DATE(8);
+		private int fieldId;
+
+		Field(int fieldId) {
+			this.fieldId = fieldId;
+		}
+
+		public int getFieldId() {
+			return fieldId;
+		}
+	}
+
+	public static final int fieldsCount = 9;
 
 	Gender gender;
 	/**
@@ -64,7 +92,7 @@ public class Employee {
 			throw new InvalidEmailException("Podany email jest nieprawidłowy");
 		}
 	}
-	
+
 	/**
 	 * @return the emailAddress
 	 */
@@ -101,6 +129,7 @@ public class Employee {
 		phoneNumber = "";
 		emailAddress = "";
 		gender = Gender.MALE;
+		ratePerHour = 0.0f;
 	}
 
 	/**
@@ -360,11 +389,11 @@ public class Employee {
 
 	public void validatePhoneNumber(String phoneNumber)
 			throws InvalidPhoneNumberException {
-		Pattern phonePatter = Pattern
-				.compile("^[+]??[\\-()\\s0-9]+$");
+		Pattern phonePatter = Pattern.compile("^[+]??[\\-()\\s0-9]+$");
 		Matcher phoneMatcher = phonePatter.matcher(phoneNumber);
 		if (!phoneMatcher.find()) {
-			throw new InvalidPhoneNumberException("Podany email jest nieprawidłowy");
+			throw new InvalidPhoneNumberException(
+					"Podany email jest nieprawidłowy");
 		}
 	}
 

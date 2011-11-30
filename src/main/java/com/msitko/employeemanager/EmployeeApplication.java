@@ -1,8 +1,14 @@
 package com.msitko.employeemanager;
 
-import com.msitko.employeemanager.controllers.EmployeeController;
+import javax.swing.SwingUtilities;
+import javax.swing.plaf.SliderUI;
+
+import com.msitko.employeemanager.controllers.EmployeeSwingController;
+import com.msitko.employeemanager.dataaccess.EmployeeDAO;
 import com.msitko.employeemanager.dataaccess.EmployeeRepository;
-import com.msitko.employeemanager.views.EmployeeView;
+import com.msitko.employeemanager.views.EmployeeGuiView;
+import com.msitko.employeemanager.views.EmployeeStandardBuilder;
+import com.msitko.employeemanager.views.EmployeeViewCreator;
 
 /**
  * Main class of Employee Manager application, contain only a main loop.
@@ -12,6 +18,31 @@ import com.msitko.employeemanager.views.EmployeeView;
  * 
  */
 public class EmployeeApplication {
+
+	public static class MojaKlasa {
+		int x;
+
+		public MojaKlasa(int x) {
+			this.x = x;
+		}
+
+		public synchronized int getX() throws InterruptedException {
+			wait(1000);
+			return x;
+		}
+		public synchronized void doSomething(){
+			try {
+				wait(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("doSomething()");
+		}
+		public synchronized void doSomethingElse(){
+			System.out.println("doSomethingElse()");
+		}
+	}
 
 	/**
 	 * @param args
@@ -27,10 +58,34 @@ public class EmployeeApplication {
 			System.out.println("Wyjątek , indeks poza tablicą : "
 					+ ex.getLocalizedMessage() + "\n" + ex.getMessage());
 		}
-		EmployeeView mainView = new EmployeeView();
-		EmployeeRepository mainModel = new EmployeeRepository(fileName);
+		final MojaKlasa klasa = new MojaKlasa(2);
+		Thread th = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				int x = 0;
+				Thread th2 = new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						klasa.doSomething();
+						
+					}
+				});
+				th2.start();
+				klasa.doSomethingElse();
+				System.out.println("Koniec");
+			}
+		});
+		th.run();
+		
+		EmployeeGuiView mainView = (new EmployeeViewCreator(
+				new EmployeeStandardBuilder())).createEmployeeWindow();
+		EmployeeRepository mainRepository = new EmployeeRepository(fileName);
 		@SuppressWarnings("unused")
-		EmployeeController mainContr = new EmployeeController(mainView,
-				mainModel);
+		EmployeeSwingController mainContr = new EmployeeSwingController(
+				mainView, mainRepository);
+		EmployeeDAO dao = new EmployeeDAO();
+		mainView.getMainFrame().setVisible(true);
 	}
 }
