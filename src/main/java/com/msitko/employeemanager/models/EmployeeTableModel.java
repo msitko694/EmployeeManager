@@ -2,8 +2,6 @@ package com.msitko.employeemanager.models;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.jar.Attributes.Name;
-
 import javax.swing.table.AbstractTableModel;
 
 import com.msitko.employeemanager.exceptions.InvalidEmailException;

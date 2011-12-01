@@ -1,18 +1,13 @@
 package com.msitko.employeemanager.views;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.EventObject;
-
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -23,12 +18,10 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
-import javax.swing.event.CellEditorListener;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.msitko.employeemanager.controllers.EmployeeSwingController;
-import com.msitko.employeemanager.models.Employee;
 import com.msitko.employeemanager.models.EmployeeTableModel;
 
 /**
@@ -59,7 +52,7 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 		buildedView.setMainFrame(new JFrame("Pracownicy"));
 		buildedView.getMainFrame().setDefaultCloseOperation(
 				JFrame.EXIT_ON_CLOSE);
-		buildedView.getMainFrame().setSize(400, 300);
+		buildedView.getMainFrame().setSize(800, 600);
 	}
 
 	@Override
@@ -136,10 +129,23 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 	@Override
 	public void buildContainer() {
 		buildedView.setTabbedPane(new JTabbedPane());
+		buildedView.getTabbedPane().addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JTabbedPane pane = (JTabbedPane) e.getSource();
+				if (pane.getSelectedIndex() == 0) {
+					buildedView.getController()
+							.visibleCreateDeleteButtons(true);
+				} else {
+					buildedView.getController().visibleCreateDeleteButtons(
+							false);
+				}
+			}
+		});
 		JScrollPane scrollPane = new JScrollPane(
 				buildedView.getAllEmployeesTable());
 		buildedView.getTabbedPane().add("Wszyscy pracownicy", scrollPane);
-		buildedView.getTabbedPane().setAutoscrolls(true);
 		buildedView.getMainFrame().getContentPane()
 				.add(buildedView.getTabbedPane(), BorderLayout.CENTER);
 	}

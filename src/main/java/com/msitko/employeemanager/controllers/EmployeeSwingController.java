@@ -2,12 +2,11 @@ package com.msitko.employeemanager.controllers;
 
 import java.sql.SQLException;
 
-import javax.swing.JPanel;
-
 import com.msitko.employeemanager.dataaccess.IEmployeeDAO;
 import com.msitko.employeemanager.models.EmployeeTableModel;
 import com.msitko.employeemanager.views.EmployeeConsoleView;
 import com.msitko.employeemanager.views.EmployeeGuiView;
+import com.msitko.employeemanager.views.NewEmployeeView;
 
 /**
  * EmployeeController class handle and proceed events which gets from swing
@@ -87,9 +86,25 @@ public class EmployeeSwingController {
 	public void closeApplication() {
 		view.getMainFrame().dispose();
 	}
-	
-	public void newEmployeeTab(){
-		JPanel newEmployeePanel = new JPanel();
-		view.getTabbedPane().addTab("Nowy pracownik", newEmployeePanel);
+
+	/**
+	 * Creates and add new tab with newEmployeeView
+	 * 
+	 * @see NewEmployeeView
+	 */
+	public void newEmployeeTab() {
+		NewEmployeeView newEmployeeView = new NewEmployeeView(this);
+		view.getTabbedPane().addTab("Nowy pracownik",
+				newEmployeeView.getMainPanel());
+	}
+
+	/**
+	 * Methods changes visibility of create and delete employee buttons
+	 */
+	public void visibleCreateDeleteButtons(boolean isVisible) {
+		if (view != null) {
+			view.getButDelete().setVisible(isVisible);
+			view.getButNew().setVisible(isVisible);
+		}
 	}
 }

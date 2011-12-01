@@ -25,10 +25,6 @@ public class EmployeeGuiView {
 	private JButton butNew;
 	private JButton butDelete;
 
-	public EmployeeGuiView() {
-	}
-
-	
 	/**
 	 * @return the butNew
 	 */
@@ -36,14 +32,13 @@ public class EmployeeGuiView {
 		return butNew;
 	}
 
-
 	/**
-	 * @param butNew the butNew to set
+	 * @param butNew
+	 *            the butNew to set
 	 */
 	public void setButNew(JButton butNew) {
 		this.butNew = butNew;
 	}
-
 
 	/**
 	 * @return the butDelete
@@ -52,14 +47,13 @@ public class EmployeeGuiView {
 		return butDelete;
 	}
 
-
 	/**
-	 * @param butDelete the butDelete to set
+	 * @param butDelete
+	 *            the butDelete to set
 	 */
 	public void setButDelete(JButton butDelete) {
 		this.butDelete = butDelete;
 	}
-
 
 	/**
 	 * @return the controller
