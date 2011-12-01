@@ -2,6 +2,8 @@ package com.msitko.employeemanager.controllers;
 
 import java.sql.SQLException;
 
+import javax.swing.JPanel;
+
 import com.msitko.employeemanager.dataaccess.IEmployeeDAO;
 import com.msitko.employeemanager.models.EmployeeTableModel;
 import com.msitko.employeemanager.views.EmployeeConsoleView;
@@ -85,5 +87,9 @@ public class EmployeeSwingController {
 	public void closeApplication() {
 		view.getMainFrame().dispose();
 	}
-
+	
+	public void newEmployeeTab(){
+		JPanel newEmployeePanel = new JPanel();
+		view.getTabbedPane().addTab("Nowy pracownik", newEmployeePanel);
+	}
 }

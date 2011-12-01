@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.EventObject;
 
 import javax.swing.JButton;
@@ -103,23 +105,43 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 	}
 
 	@Override
-	public void buildComponent() {				
+	public void buildComponent() {
 		buildedView.setAllEmployeesTable(new JTable());
 		buildedView.getAllEmployeesTable().setName("Wszyscy pracownicy");
 		EmployeeTableModel dataModel = new EmployeeTableModel();
 		buildedView.getController().setTableModel(dataModel);
 		buildedView.getAllEmployeesTable().setModel(dataModel);
 		buildedView.getController().loadAllEmployees();
+
+		buildedView.getAllEmployeesTable().getColumnModel().getColumn(0)
+				.setHeaderValue("ID");
+		buildedView.getAllEmployeesTable().getColumnModel().getColumn(1)
+				.setHeaderValue("Pesel");
+		buildedView.getAllEmployeesTable().getColumnModel().getColumn(2)
+				.setHeaderValue("Imię");
+		buildedView.getAllEmployeesTable().getColumnModel().getColumn(3)
+				.setHeaderValue("Nazwisko");
+		buildedView.getAllEmployeesTable().getColumnModel().getColumn(4)
+				.setHeaderValue("Płeć");
+		buildedView.getAllEmployeesTable().getColumnModel().getColumn(5)
+				.setHeaderValue("Telefon");
+		buildedView.getAllEmployeesTable().getColumnModel().getColumn(6)
+				.setHeaderValue("E-mail");
+		buildedView.getAllEmployeesTable().getColumnModel().getColumn(7)
+				.setHeaderValue("Stawka godzinowa");
+		buildedView.getAllEmployeesTable().getColumnModel().getColumn(8)
+				.setHeaderValue("Data urodzenia");
 	}
 
 	@Override
 	public void buildContainer() {
 		buildedView.setTabbedPane(new JTabbedPane());
-		JScrollPane scrollPane = new JScrollPane(buildedView.getTabbedPane());
-		buildedView.getTabbedPane().add(buildedView.getAllEmployeesTable());
+		JScrollPane scrollPane = new JScrollPane(
+				buildedView.getAllEmployeesTable());
+		buildedView.getTabbedPane().add("Wszyscy pracownicy", scrollPane);
 		buildedView.getTabbedPane().setAutoscrolls(true);
 		buildedView.getMainFrame().getContentPane()
-				.add(scrollPane, BorderLayout.CENTER);
+				.add(buildedView.getTabbedPane(), BorderLayout.CENTER);
 	}
 
 	@Override
@@ -128,18 +150,26 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 		FlowLayout flowLayout = new FlowLayout();
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		buttonsPanel.setLayout(flowLayout);
-		
+
 		JButton butNew = new JButton();
+		butNew.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				buildedView.getController().newEmployeeTab();
+			}
+		});
+
 		butNew.setText("Dodaj");
 		buttonsPanel.add(butNew);
 		buildedView.setButNew(butNew);
-		
+
 		JButton butDelete = new JButton();
 		butDelete.setText("Usuń");
 		buttonsPanel.add(butDelete);
 		buildedView.setButDelete(butDelete);
-		
-		buildedView.getMainFrame().getContentPane().add(buttonsPanel,  BorderLayout.SOUTH);
+
+		buildedView.getMainFrame().getContentPane()
+				.add(buttonsPanel, BorderLayout.SOUTH);
 	}
 
 	@Override
