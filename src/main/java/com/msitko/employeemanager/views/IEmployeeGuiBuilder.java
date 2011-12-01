@@ -18,7 +18,7 @@ public interface IEmployeeGuiBuilder {
 
 	void buildContainer();
 
-	void buildOptionPane();
+	void buildButtons();
 
 	EmployeeGuiView getCreatedWindow();
 }

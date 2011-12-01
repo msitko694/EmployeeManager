@@ -3,14 +3,13 @@ package com.msitko.employeemanager.dataaccess;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.concurrent.Callable;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -27,6 +26,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.msitko.employeemanager.exceptions.InvalidEmailException;
+import com.msitko.employeemanager.exceptions.InvalidPeselException;
+import com.msitko.employeemanager.exceptions.InvalidPhoneNumberException;
 import com.msitko.employeemanager.exceptions.NoEmployeeException;
 import com.msitko.employeemanager.models.Employee;
 
@@ -36,21 +38,22 @@ import com.msitko.employeemanager.models.Employee;
  * @author Marcin Sitko
  * @version 1.0
  */
-public class EmployeeDAO {
+public class EmployeeDAO implements IEmployeeDAO  {
 
 	Connection connection;
 
-	/**
-	 * @return the connection
+	/* (non-Javadoc)
+	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#getConnection()
 	 */
+	@Override
 	public Connection getConnection() {
 		return connection;
 	}
 
-	/**
-	 * @param connection
-	 *            the connection to set
+	/* (non-Javadoc)
+	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#setConnection(java.sql.Connection)
 	 */
+	@Override
 	public void setConnection(Connection connection) {
 		this.connection = connection;
 	}
@@ -99,9 +102,11 @@ public class EmployeeDAO {
 		}
 	}
 
-	/**
-	 * Methods create new employee database if not exist.
+
+	/* (non-Javadoc)
+	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#createNewDb()
 	 */
+	@Override
 	public void createNewDb() {
 		try {
 			Statement statement = connection.createStatement();
@@ -117,10 +122,11 @@ public class EmployeeDAO {
 		}
 	}
 
-	/**
-	 * Method creates default XML DataBase connection file with name
-	 * <code>dbConnection.xml</code>
+
+	/* (non-Javadoc)
+	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#createDefaultXml()
 	 */
+	@Override
 	public void createDefaultXml() {
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
 				.newInstance();
@@ -160,19 +166,17 @@ public class EmployeeDAO {
 		}
 	}
 
-	/**
-	 * Create in Database new employee record and assign unique id to passed
-	 * Employee object
-	 * 
-	 * @param newEmployee
-	 *            Employee object which contains data to save
+
+	/* (non-Javadoc)
+	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#createEmployee(com.msitko.employeemanager.models.Employee)
 	 */
+	@Override
 	public void createEmployee(Employee newEmployee) {
 		try {
 			PreparedStatement preparedStatement = connection
 					.prepareStatement("INSERT INTO Employees (name, surname, pesel, phoneNumber, emailAddress, "
 							+ "ratePerHour, birthDate) VALUES ( ?, ?, ?, ?, ?, ?, ?)");
-			
+
 			preparedStatement.setQueryTimeout(5);
 			preparedStatement.setString(1, newEmployee.getName());
 			preparedStatement.setString(2, newEmployee.getSurname());
@@ -185,51 +189,128 @@ public class EmployeeDAO {
 			preparedStatement.executeUpdate();
 
 			Statement statement = connection.createStatement();
-			ResultSet resultSet = statement.executeQuery("select last_insert_rowid()");
+			ResultSet resultSet = statement
+					.executeQuery("select last_insert_rowid()");
 			resultSet.next();
 			newEmployee.setId(resultSet.getInt(1));
+			resultSet.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
 	}
 
-	/**
-	 * Method find employee data and return it as Employee object
-	 * 
-	 * @param id
-	 *            of employee who we looking for
-	 * @return Employee object created from employee data
-	 * @throws NoEmployeeException
-	 *             if in Database is no employee with passed id
-	 */
-	public Employee findEmployeeById(int id) throws NoEmployeeException {
-		try {
-			PreparedStatement statement = connection
-					.prepareStatement("Select rowid, name, surname, pesel, phoneNumber, emailAddress, "
-							+ "ratePerHour, birthDate From Employees Where rowid = ?");
-			statement.setInt(1, id);
-			statement.setQueryTimeout(5);
-			ResultSet resultSet = statement.executeQuery();
-			resultSet.next();
 
-			Employee readedEmployee = new Employee();
-			readedEmployee.setId(resultSet.getInt("rowid"));
-			if (resultSet.wasNull()) {
-				throw new NoEmployeeException(
-						"Nie odnaleziono pracownika z podanym id");
-			}
-			readedEmployee.setName(resultSet.getString("name"));
-			readedEmployee.setSurname(resultSet.getString("surname"));
+	/* (non-Javadoc)
+	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#findEmployeeById(int)
+	 */
+	@Override
+	public Employee findEmployeeById(int id) throws NoEmployeeException,
+			SQLException {
+		PreparedStatement statement = connection
+				.prepareStatement("Select rowid, name, surname, pesel, phoneNumber, emailAddress, "
+						+ "ratePerHour, birthDate From Employees Where rowid = ?");
+		statement.setInt(1, id);
+		statement.setQueryTimeout(5);
+		ResultSet resultSet = statement.executeQuery();
+		if (!resultSet.next()) {
+			throw new NoEmployeeException(
+					"Nie odnaleziono pracownika z podanym id");
+		}
+
+		Employee readedEmployee = new Employee();
+		readedEmployee.setId(resultSet.getInt("rowid"));
+		readedEmployee.setName(resultSet.getString("name"));
+		readedEmployee.setSurname(resultSet.getString("surname"));
+		try {
 			readedEmployee.setPesel(resultSet.getLong("pesel"));
 			readedEmployee.setPhoneNumber(resultSet.getString("phoneNumber"));
 			readedEmployee.setEmailAddress(resultSet.getString("emailAddress"));
-			readedEmployee.setRatePerHour(resultSet.getFloat("ratePerHour"));
-			readedEmployee.setBirthDate(resultSet.getDate("birthDate"));
+		} catch (InvalidPeselException ex) {
+			System.out.println("Nie prawidlowy pesel");
+		} catch (InvalidEmailException ex) {
+			System.out.println("Nie prawidlowy email");
+		} catch (InvalidPhoneNumberException ex) {
+			System.out.println("Nie prawidlowy numer telefonu");
+		}
+		readedEmployee.setRatePerHour(resultSet.getFloat("ratePerHour"));
+		readedEmployee.setBirthDate(resultSet.getDate("birthDate"));
+		resultSet.close();
+		return readedEmployee;
+	}
 
-			return readedEmployee;
-		} catch (Exception ex) {
+	/* (non-Javadoc)
+	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#deleteEmployee(int)
+	 */
+	@Override
+	public void deleteEmployee(int id) {
+		try {
+			PreparedStatement statement = connection
+					.prepareStatement("Delete From Employees Where rowid = ? ");
+			statement.setInt(1, id);
+			statement.executeUpdate();
+		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#updateEmployee(com.msitko.employeemanager.models.Employee)
+	 */
+	@Override
+	public void updateEmployee(Employee updatingEmployee) throws SQLException {
+		PreparedStatement preparedStatement = connection
+				.prepareStatement("UPDATE Employees SET name= ?, surname= ?, pesel= ?, "
+						+ "phoneNumber= ?, emailAddress=?, ratePerHour= ?, birthDate= ? "
+						+ "WHERE rowid = ?");
+
+		preparedStatement.setQueryTimeout(5);
+		preparedStatement.setString(1, updatingEmployee.getName());
+		preparedStatement.setString(2, updatingEmployee.getSurname());
+		preparedStatement.setLong(3, updatingEmployee.getPesel());
+		preparedStatement.setString(4, updatingEmployee.getPhoneNumber());
+		preparedStatement.setString(5, updatingEmployee.getEmailAddress());
+		preparedStatement.setFloat(6, updatingEmployee.getRatePerHour());
+		preparedStatement.setDate(7, new java.sql.Date(updatingEmployee
+				.getBirthDate().getTime()));
+		preparedStatement.setInt(8, updatingEmployee.getId());
+		preparedStatement.executeUpdate();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#findAll()
+	 */
+	@Override
+	public ArrayList<Employee> findAll() throws SQLException {
+		PreparedStatement statement = connection
+				.prepareStatement("Select rowid, name, surname, pesel, phoneNumber, emailAddress, "
+						+ "ratePerHour, birthDate From Employees");
+		statement.setQueryTimeout(5);
+		ResultSet resultSet = statement.executeQuery();
+		ArrayList<Employee> resultList = new ArrayList<>();
+
+		while (resultSet.next()) {
+			Employee readedEmployee = new Employee();
+			readedEmployee.setId(resultSet.getInt("rowid"));
+			readedEmployee.setName(resultSet.getString("name"));
+			readedEmployee.setSurname(resultSet.getString("surname"));
+			try {
+				readedEmployee.setPesel(resultSet.getLong("pesel"));
+				readedEmployee.setPhoneNumber(resultSet
+						.getString("phoneNumber"));
+				readedEmployee.setEmailAddress(resultSet
+						.getString("emailAddress"));
+			} catch (InvalidPeselException ex) {
+				System.out.println("Nie prawidlowy pesel");
+			} catch (InvalidEmailException ex) {
+				System.out.println("Nie prawidlowy email");
+			} catch (InvalidPhoneNumberException ex) {
+				System.out.println("Nie prawidlowy numer telefonu");
+			}
+			readedEmployee.setRatePerHour(resultSet.getFloat("ratePerHour"));
+			readedEmployee.setBirthDate(resultSet.getDate("birthDate"));
+			resultList.add(readedEmployee);
+		}
+		resultSet.close();
+		return resultList;
 	}
 }

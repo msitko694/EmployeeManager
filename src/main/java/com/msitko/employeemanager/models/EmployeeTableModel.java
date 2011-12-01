@@ -1,8 +1,14 @@
 package com.msitko.employeemanager.models;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.jar.Attributes.Name;
 
 import javax.swing.table.AbstractTableModel;
+
+import com.msitko.employeemanager.exceptions.InvalidEmailException;
+import com.msitko.employeemanager.exceptions.InvalidPeselException;
+import com.msitko.employeemanager.exceptions.InvalidPhoneNumberException;
 
 public class EmployeeTableModel extends AbstractTableModel {
 
@@ -40,7 +46,11 @@ public class EmployeeTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if (columnIndex == Employee.Field.GENDER.getFieldId()) {
-			return listOfEmployees.get(rowIndex).getGender();
+			if (listOfEmployees.get(rowIndex).getGender() == Employee.Gender.MALE) {
+				return "Mężczyzna";
+			} else {
+				return "Kobieta";
+			}
 		} else if (columnIndex == Employee.Field.ID.getFieldId()) {
 			return listOfEmployees.get(rowIndex).getId();
 		} else if (columnIndex == Employee.Field.BIRTH_DATE.getFieldId()) {
@@ -62,9 +72,50 @@ public class EmployeeTableModel extends AbstractTableModel {
 		}
 	}
 
+	@Override
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+		if (columnIndex == Employee.Field.GENDER.getFieldId()) {
+			String gender = (String) aValue;
+			if (gender.toLowerCase().equals("mężczyzna")) {
+				listOfEmployees.get(rowIndex).setGender(Employee.Gender.MALE);
+			} else if (gender.toLowerCase().equals("kobieta")) {
+				listOfEmployees.get(rowIndex).setGender(Employee.Gender.FEMALE);
+			}
+		} else if (columnIndex == Employee.Field.ID.getFieldId()) {
+			listOfEmployees.get(rowIndex).setId((Integer) aValue);
+		} else if (columnIndex == Employee.Field.BIRTH_DATE.getFieldId()) {
+			listOfEmployees.get(rowIndex).setBirthDate((Date) aValue);
+		} else if (columnIndex == Employee.Field.EMAIL.getFieldId()) {
+			try {
+				listOfEmployees.get(rowIndex).setEmailAddress((String) aValue);
+			} catch (InvalidEmailException e) {
+			}
+		} else if (columnIndex == Employee.Field.NAME.getFieldId()) {
+			listOfEmployees.get(rowIndex).setName((String) aValue);
+		} else if (columnIndex == Employee.Field.SURNAME.getFieldId()) {
+			listOfEmployees.get(rowIndex).setSurname((String) aValue);
+		} else if (columnIndex == Employee.Field.PESEL.getFieldId()) {
+			try {
+				listOfEmployees.get(rowIndex).setPesel((long) aValue);
+			} catch (InvalidPeselException e) {
+			}
+		} else if (columnIndex == Employee.Field.PHONE_NUMBER.getFieldId()) {
+			try {
+				listOfEmployees.get(rowIndex).setPhoneNumber((String) aValue);
+			} catch (InvalidPhoneNumberException e) {
+			}
+		} else if (columnIndex == Employee.Field.RATE_PER_HOUR.getFieldId()) {
+			listOfEmployees.get(rowIndex).setRatePerHour((Float) aValue);
+		}
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Class getColumnClass(int column) {
 		return getValueAt(0, column).getClass();
 	}
 
+	@Override
+	public boolean isCellEditable(int row, int column) {
+		return true;
+	}
 }

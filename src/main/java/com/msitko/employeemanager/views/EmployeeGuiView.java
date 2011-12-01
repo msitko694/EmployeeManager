@@ -1,9 +1,12 @@
 package com.msitko.employeemanager.views;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
+
+import com.msitko.employeemanager.controllers.EmployeeSwingController;
 
 /***
  * Class is used about presenting information in Swing GUI
@@ -18,6 +21,60 @@ public class EmployeeGuiView {
 	private JTable allEmployeesTable;
 	private JToolBar toolBar;
 	private JTabbedPane tabbedPane;
+	private EmployeeSwingController controller;
+	private JButton butNew;
+	private JButton butDelete;
+
+	public EmployeeGuiView() {
+	}
+
+	
+	/**
+	 * @return the butNew
+	 */
+	public JButton getButNew() {
+		return butNew;
+	}
+
+
+	/**
+	 * @param butNew the butNew to set
+	 */
+	public void setButNew(JButton butNew) {
+		this.butNew = butNew;
+	}
+
+
+	/**
+	 * @return the butDelete
+	 */
+	public JButton getButDelete() {
+		return butDelete;
+	}
+
+
+	/**
+	 * @param butDelete the butDelete to set
+	 */
+	public void setButDelete(JButton butDelete) {
+		this.butDelete = butDelete;
+	}
+
+
+	/**
+	 * @return the controller
+	 */
+	public EmployeeSwingController getController() {
+		return controller;
+	}
+
+	/**
+	 * @param controller
+	 *            the controller to set
+	 */
+	public void setController(EmployeeSwingController controller) {
+		this.controller = controller;
+	}
 
 	/**
 	 * @return the mainFrame
@@ -77,8 +134,5 @@ public class EmployeeGuiView {
 	 */
 	public void setTabbedPane(JTabbedPane tabbedPane) {
 		this.tabbedPane = tabbedPane;
-	}
-
-	public EmployeeGuiView() {
 	}
 }

@@ -45,7 +45,7 @@ public class Employee {
 	 * @version 1.0
 	 */
 	public static enum Field {
-		GENDER(0), ID(1), PESEL(2), NAME(3), SURNAME(4), PHONE_NUMBER(5), EMAIL(
+		ID(0), PESEL(1), NAME(2), SURNAME(3), GENDER(4), PHONE_NUMBER(5), EMAIL(
 				6), RATE_PER_HOUR(7), BIRTH_DATE(8);
 		private int fieldId;
 
@@ -381,10 +381,8 @@ public class Employee {
 	 */
 	public void setPhoneNumber(String phoneNumber)
 			throws InvalidPhoneNumberException {
-		this.phoneNumber = phoneNumber;
-
 		this.validatePhoneNumber(phoneNumber);
-
+		this.phoneNumber = phoneNumber;
 	}
 
 	public void validatePhoneNumber(String phoneNumber)

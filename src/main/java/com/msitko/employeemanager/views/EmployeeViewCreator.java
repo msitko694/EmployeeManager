@@ -32,7 +32,7 @@ public class EmployeeViewCreator {
 		builder.buildToolBar();
 		builder.buildComponent();
 		builder.buildContainer();
-		builder.buildOptionPane();
+		builder.buildButtons();
 		return builder.getCreatedWindow();
 	}
 }

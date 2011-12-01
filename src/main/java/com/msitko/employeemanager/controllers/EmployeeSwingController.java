@@ -1,6 +1,9 @@
 package com.msitko.employeemanager.controllers;
 
-import com.msitko.employeemanager.dataaccess.EmployeeRepository;
+import java.sql.SQLException;
+
+import com.msitko.employeemanager.dataaccess.IEmployeeDAO;
+import com.msitko.employeemanager.models.EmployeeTableModel;
 import com.msitko.employeemanager.views.EmployeeConsoleView;
 import com.msitko.employeemanager.views.EmployeeGuiView;
 
@@ -15,11 +18,35 @@ import com.msitko.employeemanager.views.EmployeeGuiView;
  */
 public class EmployeeSwingController {
 	private EmployeeGuiView view;
-	private EmployeeRepository repository;
+	private IEmployeeDAO dao;
+	private EmployeeTableModel tableModel;
 
-	public EmployeeSwingController(EmployeeGuiView view, EmployeeRepository repository) {
+	public EmployeeSwingController(EmployeeGuiView view, IEmployeeDAO dao) {
 		this.view = view;
-		this.repository = repository;
+		this.dao = dao;
+	}
+
+	public void loadAllEmployees() {
+		try {
+			tableModel.setListOfEmployees(dao.findAll());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @return the tableModel
+	 */
+	public EmployeeTableModel getTableModel() {
+		return tableModel;
+	}
+
+	/**
+	 * @param tableModel
+	 *            the tableModel to set
+	 */
+	public void setTableModel(EmployeeTableModel tableModel) {
+		this.tableModel = tableModel;
 	}
 
 	/**
@@ -38,18 +65,25 @@ public class EmployeeSwingController {
 	}
 
 	/**
-	 * @return the repository
+	 * @return the dao object
 	 */
-	public EmployeeRepository getRepository() {
-		return repository;
+	public IEmployeeDAO getDao() {
+		return this.dao;
 	}
 
 	/**
 	 * @param repository
-	 *            the repository to set
+	 *            the dao object to set
 	 */
-	public void setRepository(EmployeeRepository repository) {
-		this.repository = repository;
+	public void setDao(IEmployeeDAO dao) {
+		this.dao = dao;
+	}
+
+	/**
+	 * Method closes application
+	 */
+	public void closeApplication() {
+		view.getMainFrame().dispose();
 	}
 
 }

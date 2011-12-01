@@ -1,18 +1,32 @@
 package com.msitko.employeemanager.views;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.EventObject;
+
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.event.CellEditorListener;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 
-import com.msitko.employeemanager.dataaccess.EmployeeRepository;
+import com.msitko.employeemanager.controllers.EmployeeSwingController;
+import com.msitko.employeemanager.models.Employee;
 import com.msitko.employeemanager.models.EmployeeTableModel;
 
 /**
@@ -29,17 +43,20 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 	private EmployeeGuiView buildedView;
 
 	/**
-	 * Default constructor which create new <code> EmployeeGuiView </code> and
-	 * assign it to <code> buildedView </code>
+	 * Constructor which create new <code> EmployeeGuiView </code>, assign a new
+	 * EmployeeGuiView object and connect this object with passed controller
+	 * 
 	 */
-	public EmployeeStandardBuilder() {
+	public EmployeeStandardBuilder(EmployeeSwingController controller) {
 		buildedView = new EmployeeGuiView();
+		buildedView.setController(controller);
 	}
 
 	@Override
 	public void buildFrame() {
-		buildedView.setMainFrame( new JFrame("Pracownicy"));
-		buildedView.getMainFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		buildedView.setMainFrame(new JFrame("Pracownicy"));
+		buildedView.getMainFrame().setDefaultCloseOperation(
+				JFrame.EXIT_ON_CLOSE);
 		buildedView.getMainFrame().setSize(400, 300);
 	}
 
@@ -47,7 +64,16 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 	public void buildMenu() {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("Plik");
-		fileMenu.add("Zakończ");
+		JMenuItem exit = new JMenuItem("Zakończ");
+		exit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getActionCommand().equals("Zakończ")) {
+					buildedView.getController().closeApplication();
+				}
+			}
+		});
+		fileMenu.add(exit);
 		menuBar.add(fileMenu);
 		JMenu helpMenu = new JMenu("Pomoc");
 		helpMenu.add("O programie");
@@ -65,7 +91,6 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 		txtSearchField.setPreferredSize(new Dimension(150, 0));
 		JButton searchButton = new JButton();
 		searchButton.setText("Szukaj");
-
 		toolBar.add(txtSearchField);
 		toolBar.add(searchButton);
 
@@ -73,30 +98,48 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 		toolPanel.setPreferredSize(new Dimension(400, 35));
 		toolPanel.add(toolBar, BorderLayout.NORTH);
 
-		buildedView.getMainFrame().getContentPane().add(toolPanel, BorderLayout.NORTH);
+		buildedView.getMainFrame().getContentPane()
+				.add(toolPanel, BorderLayout.NORTH);
 	}
 
 	@Override
-	public void buildComponent() {
+	public void buildComponent() {				
 		buildedView.setAllEmployeesTable(new JTable());
 		buildedView.getAllEmployeesTable().setName("Wszyscy pracownicy");
-		EmployeeRepository repo = new EmployeeRepository("employee.txt");
 		EmployeeTableModel dataModel = new EmployeeTableModel();
-		dataModel.setListOfEmployees(repo.getEmplList());
+		buildedView.getController().setTableModel(dataModel);
 		buildedView.getAllEmployeesTable().setModel(dataModel);
+		buildedView.getController().loadAllEmployees();
 	}
 
 	@Override
 	public void buildContainer() {
 		buildedView.setTabbedPane(new JTabbedPane());
+		JScrollPane scrollPane = new JScrollPane(buildedView.getTabbedPane());
 		buildedView.getTabbedPane().add(buildedView.getAllEmployeesTable());
-		buildedView.getMainFrame().getContentPane().add(buildedView.getTabbedPane(), BorderLayout.CENTER);
+		buildedView.getTabbedPane().setAutoscrolls(true);
+		buildedView.getMainFrame().getContentPane()
+				.add(scrollPane, BorderLayout.CENTER);
 	}
 
 	@Override
-	public void buildOptionPane() {
-		// TODO Auto-generated method stub
-
+	public void buildButtons() {
+		JPanel buttonsPanel = new JPanel();
+		FlowLayout flowLayout = new FlowLayout();
+		flowLayout.setAlignment(FlowLayout.RIGHT);
+		buttonsPanel.setLayout(flowLayout);
+		
+		JButton butNew = new JButton();
+		butNew.setText("Dodaj");
+		buttonsPanel.add(butNew);
+		buildedView.setButNew(butNew);
+		
+		JButton butDelete = new JButton();
+		butDelete.setText("Usuń");
+		buttonsPanel.add(butDelete);
+		buildedView.setButDelete(butDelete);
+		
+		buildedView.getMainFrame().getContentPane().add(buttonsPanel,  BorderLayout.SOUTH);
 	}
 
 	@Override
