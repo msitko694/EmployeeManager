@@ -276,7 +276,7 @@ public class EmployeeTest {
 		Employee instance = new Employee();
 		instance.setId(4);
 		// when
-		int resultId = instance.getId();
+		long resultId = instance.getId();
 		// then
 		assertEquals(4, resultId);
 	}

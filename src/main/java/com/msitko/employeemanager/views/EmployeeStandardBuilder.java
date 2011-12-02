@@ -18,8 +18,12 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import com.msitko.employeemanager.controllers.EmployeeSwingController;
 import com.msitko.employeemanager.models.EmployeeTableModel;
@@ -82,12 +86,27 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 		toolBar.setFloatable(false);
 		toolBar.setRollover(true);
 
-		JTextField txtSearchField = new JTextField();
+		final JTextField txtSearchField = new JTextField();
 		txtSearchField.setPreferredSize(new Dimension(150, 0));
-		JButton searchButton = new JButton();
-		searchButton.setText("Szukaj");
+		txtSearchField.addCaretListener(new CaretListener() {
+			
+			@Override
+			public void caretUpdate(CaretEvent e) {
+				buildedView.getController().applyFilter(txtSearchField.getText());	
+			}
+		});
+		
+		JButton clearButton = new JButton();
+		clearButton.setText("Wyczyść");
+		clearButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e){
+				txtSearchField.setText("");
+			}
+		});
+		
 		toolBar.add(txtSearchField);
-		toolBar.add(searchButton);
+		toolBar.add(clearButton);
 
 		JPanel toolPanel = new JPanel(new BorderLayout());
 		toolPanel.setPreferredSize(new Dimension(400, 35));
@@ -102,9 +121,14 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 		buildedView.setAllEmployeesTable(new JTable());
 		buildedView.getAllEmployeesTable().setName("Wszyscy pracownicy");
 		EmployeeTableModel dataModel = new EmployeeTableModel();
+		dataModel.setController(buildedView.getController());
 		buildedView.getController().setTableModel(dataModel);
 		buildedView.getAllEmployeesTable().setModel(dataModel);
 		buildedView.getController().loadAllEmployees();
+		
+		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(dataModel);
+		buildedView.getAllEmployeesTable().setRowSorter(sorter);
+		dataModel.setSorter(sorter);
 
 		buildedView.getAllEmployeesTable().getColumnModel().getColumn(0)
 				.setHeaderValue("ID");
@@ -164,12 +188,19 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 				buildedView.getController().newEmployeeTab();
 			}
 		});
-
 		butNew.setText("Dodaj");
 		buttonsPanel.add(butNew);
 		buildedView.setButNew(butNew);
 
 		JButton butDelete = new JButton();
+		butDelete.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int selectedRows[] = buildedView.getAllEmployeesTable()
+						.getSelectedRows();
+				buildedView.getController().deleteEmployee(selectedRows);
+			}
+		});
 		butDelete.setText("Usuń");
 		buttonsPanel.add(butDelete);
 		buildedView.setButDelete(butDelete);

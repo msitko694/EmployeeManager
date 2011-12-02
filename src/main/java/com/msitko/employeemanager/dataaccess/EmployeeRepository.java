@@ -129,7 +129,7 @@ public class EmployeeRepository {
 	}
 
 	public void addEmployee(Employee employee) {
-		int maxId = 0;
+		long maxId = 0;
 		for (int i = 0; i < emplList.size(); i++) {
 			if (maxId < emplList.get(i).getId()) {
 				maxId = emplList.get(i).getId();

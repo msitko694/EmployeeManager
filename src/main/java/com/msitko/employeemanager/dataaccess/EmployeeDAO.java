@@ -38,11 +38,13 @@ import com.msitko.employeemanager.models.Employee;
  * @author Marcin Sitko
  * @version 1.0
  */
-public class EmployeeDAO implements IEmployeeDAO  {
+public class EmployeeDAO implements IEmployeeDAO {
 
 	Connection connection;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#getConnection()
 	 */
 	@Override
@@ -50,8 +52,12 @@ public class EmployeeDAO implements IEmployeeDAO  {
 		return connection;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#setConnection(java.sql.Connection)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.msitko.employeemanager.dataaccess.IEmployeeDAO#setConnection(java
+	 * .sql.Connection)
 	 */
 	@Override
 	public void setConnection(Connection connection) {
@@ -102,8 +108,9 @@ public class EmployeeDAO implements IEmployeeDAO  {
 		}
 	}
 
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#createNewDb()
 	 */
 	@Override
@@ -115,16 +122,18 @@ public class EmployeeDAO implements IEmployeeDAO  {
 			if (!resultSet.next()) {
 				statement
 						.executeUpdate("create table Employees (name string, surname string, pesel int8, "
-								+ "phoneNumber string, emailAddress string, ratePerHour float, birthDate date) ");
+								+ "phoneNumber string, emailAddress string, ratePerHour float, birthDate date, gender int) ");
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
 	}
 
-
-	/* (non-Javadoc)
-	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#createDefaultXml()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.msitko.employeemanager.dataaccess.IEmployeeDAO#createDefaultXml()
 	 */
 	@Override
 	public void createDefaultXml() {
@@ -166,16 +175,19 @@ public class EmployeeDAO implements IEmployeeDAO  {
 		}
 	}
 
-
-	/* (non-Javadoc)
-	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#createEmployee(com.msitko.employeemanager.models.Employee)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.msitko.employeemanager.dataaccess.IEmployeeDAO#createEmployee(com
+	 * .msitko.employeemanager.models.Employee)
 	 */
 	@Override
 	public void createEmployee(Employee newEmployee) {
 		try {
 			PreparedStatement preparedStatement = connection
 					.prepareStatement("INSERT INTO Employees (name, surname, pesel, phoneNumber, emailAddress, "
-							+ "ratePerHour, birthDate) VALUES ( ?, ?, ?, ?, ?, ?, ?)");
+							+ "ratePerHour, birthDate, gender) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)");
 
 			preparedStatement.setQueryTimeout(5);
 			preparedStatement.setString(1, newEmployee.getName());
@@ -186,6 +198,7 @@ public class EmployeeDAO implements IEmployeeDAO  {
 			preparedStatement.setFloat(6, newEmployee.getRatePerHour());
 			preparedStatement.setDate(7, new java.sql.Date(newEmployee
 					.getBirthDate().getTime()));
+			preparedStatement.setInt(8, newEmployee.getGender().getIntValue());
 			preparedStatement.executeUpdate();
 
 			Statement statement = connection.createStatement();
@@ -199,17 +212,19 @@ public class EmployeeDAO implements IEmployeeDAO  {
 		}
 	}
 
-
-	/* (non-Javadoc)
-	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#findEmployeeById(int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.msitko.employeemanager.dataaccess.IEmployeeDAO#findEmployeeById(int)
 	 */
 	@Override
-	public Employee findEmployeeById(int id) throws NoEmployeeException,
+	public Employee findEmployeeById(long id) throws NoEmployeeException,
 			SQLException {
 		PreparedStatement statement = connection
 				.prepareStatement("Select rowid, name, surname, pesel, phoneNumber, emailAddress, "
-						+ "ratePerHour, birthDate From Employees Where rowid = ?");
-		statement.setInt(1, id);
+						+ "ratePerHour, birthDate, gender From Employees Where rowid = ?");
+		statement.setLong(1, id);
 		statement.setQueryTimeout(5);
 		ResultSet resultSet = statement.executeQuery();
 		if (!resultSet.next()) {
@@ -234,33 +249,45 @@ public class EmployeeDAO implements IEmployeeDAO  {
 		}
 		readedEmployee.setRatePerHour(resultSet.getFloat("ratePerHour"));
 		readedEmployee.setBirthDate(resultSet.getDate("birthDate"));
+		if (resultSet.getInt("gender") == Employee.Gender.MALE.getIntValue()) {
+			readedEmployee.setGender(Employee.Gender.MALE);
+		} else {
+			readedEmployee.setGender(Employee.Gender.FEMALE);
+		}
 		resultSet.close();
 		return readedEmployee;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#deleteEmployee(int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.msitko.employeemanager.dataaccess.IEmployeeDAO#deleteEmployee(int)
 	 */
 	@Override
-	public void deleteEmployee(int id) {
+	public void deleteEmployee(long id) {
 		try {
 			PreparedStatement statement = connection
 					.prepareStatement("Delete From Employees Where rowid = ? ");
-			statement.setInt(1, id);
+			statement.setLong(1, id);
 			statement.executeUpdate();
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#updateEmployee(com.msitko.employeemanager.models.Employee)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.msitko.employeemanager.dataaccess.IEmployeeDAO#updateEmployee(com
+	 * .msitko.employeemanager.models.Employee)
 	 */
 	@Override
 	public void updateEmployee(Employee updatingEmployee) throws SQLException {
 		PreparedStatement preparedStatement = connection
 				.prepareStatement("UPDATE Employees SET name= ?, surname= ?, pesel= ?, "
-						+ "phoneNumber= ?, emailAddress=?, ratePerHour= ?, birthDate= ? "
+						+ "phoneNumber= ?, emailAddress=?, ratePerHour= ?, birthDate= ?, gender = ? "
 						+ "WHERE rowid = ?");
 
 		preparedStatement.setQueryTimeout(5);
@@ -272,18 +299,21 @@ public class EmployeeDAO implements IEmployeeDAO  {
 		preparedStatement.setFloat(6, updatingEmployee.getRatePerHour());
 		preparedStatement.setDate(7, new java.sql.Date(updatingEmployee
 				.getBirthDate().getTime()));
-		preparedStatement.setInt(8, updatingEmployee.getId());
+		preparedStatement.setLong(8, updatingEmployee.getGender().getIntValue());
+		preparedStatement.setLong(9, updatingEmployee.getId());
 		preparedStatement.executeUpdate();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.msitko.employeemanager.dataaccess.IEmployeeDAO#findAll()
 	 */
 	@Override
 	public ArrayList<Employee> findAll() throws SQLException {
 		PreparedStatement statement = connection
 				.prepareStatement("Select rowid, name, surname, pesel, phoneNumber, emailAddress, "
-						+ "ratePerHour, birthDate From Employees");
+						+ "ratePerHour, birthDate, gender From Employees");
 		statement.setQueryTimeout(5);
 		ResultSet resultSet = statement.executeQuery();
 		ArrayList<Employee> resultList = new ArrayList<>();
@@ -308,6 +338,13 @@ public class EmployeeDAO implements IEmployeeDAO  {
 			}
 			readedEmployee.setRatePerHour(resultSet.getFloat("ratePerHour"));
 			readedEmployee.setBirthDate(resultSet.getDate("birthDate"));
+			readedEmployee.setBirthDate(resultSet.getDate("birthDate"));
+			if (resultSet.getInt("gender") == Employee.Gender.MALE.getIntValue()) {
+				readedEmployee.setGender(Employee.Gender.MALE);
+			} else {
+				readedEmployee.setGender(Employee.Gender.FEMALE);
+			}
+			
 			resultList.add(readedEmployee);
 		}
 		resultSet.close();

@@ -2,7 +2,10 @@ package com.msitko.employeemanager.controllers;
 
 import java.sql.SQLException;
 
+import javax.swing.RowFilter;
+
 import com.msitko.employeemanager.dataaccess.IEmployeeDAO;
+import com.msitko.employeemanager.models.Employee;
 import com.msitko.employeemanager.models.EmployeeTableModel;
 import com.msitko.employeemanager.views.EmployeeConsoleView;
 import com.msitko.employeemanager.views.EmployeeGuiView;
@@ -105,6 +108,66 @@ public class EmployeeSwingController {
 		if (view != null) {
 			view.getButDelete().setVisible(isVisible);
 			view.getButNew().setVisible(isVisible);
+		}
+	}
+
+	/**
+	 * Saves employee object into database
+	 * 
+	 * @param savingEmployee
+	 */
+	public void saveEmployee(Employee savingEmployee) {
+		dao.createEmployee(savingEmployee);
+		tableModel.getListOfEmployees().add(savingEmployee);
+	}
+
+	/**
+	 * Delete from database employee with passed id
+	 * 
+	 * @param object
+	 * @param selectedRows
+	 *            array of numbers of selected rows
+	 */
+	public void deleteEmployee(int[] selectedRows) {
+		for (int it : selectedRows) {
+			long id = (long) view.getAllEmployeesTable().getModel()
+					.getValueAt(it, Employee.Field.ID.getFieldId());
+			dao.deleteEmployee(id);
+		}
+		tableModel
+				.getListOfEmployees()
+				.subList(selectedRows[0],
+						selectedRows[selectedRows.length - 1] + 1).clear();
+		tableModel.fireTableRowsDeleted(selectedRows[0],
+				selectedRows[selectedRows.length - 1] + 1);
+	}
+
+	/**
+	 * Method updates employee in database
+	 * 
+	 * @param employeeToUpdate
+	 *            employee to update
+	 */
+	public void updateEmployee(Employee employeeToUpdate) {
+		try {
+			dao.updateEmployee(employeeToUpdate);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Method applies filter to table
+	 * 
+	 * @param phrase
+	 *            which we are looking for
+	 */
+	public void applyFilter(String phrase) {
+		if (phrase.length() > 0) {
+			tableModel.getSorter().setRowFilter(
+					RowFilter.regexFilter(".*" + phrase + ".*"));
+		} else {
+			tableModel.getSorter().setRowFilter(null);
 		}
 	}
 }

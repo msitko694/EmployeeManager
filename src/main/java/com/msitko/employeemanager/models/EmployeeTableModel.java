@@ -1,9 +1,13 @@
 package com.msitko.employeemanager.models;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
+import com.msitko.employeemanager.controllers.EmployeeSwingController;
 import com.msitko.employeemanager.exceptions.InvalidEmailException;
 import com.msitko.employeemanager.exceptions.InvalidPeselException;
 import com.msitko.employeemanager.exceptions.InvalidPhoneNumberException;
@@ -11,10 +15,41 @@ import com.msitko.employeemanager.exceptions.InvalidPhoneNumberException;
 public class EmployeeTableModel extends AbstractTableModel {
 
 	private ArrayList<Employee> listOfEmployees;
+	private EmployeeSwingController controller;
+	private TableRowSorter<TableModel> sorter;
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8207397652842994017L;
+
+	
+	/**
+	 * @return the sorter
+	 */
+	public TableRowSorter<TableModel> getSorter() {
+		return sorter;
+	}
+
+	/**
+	 * @param sorter the sorter to set
+	 */
+	public void setSorter(TableRowSorter<TableModel> sorter) {
+		this.sorter = sorter;
+	}
+
+	/**
+	 * @return the controller
+	 */
+	public EmployeeSwingController getController() {
+		return controller;
+	}
+
+	/**
+	 * @param controller the controller to set
+	 */
+	public void setController(EmployeeSwingController controller) {
+		this.controller = controller;
+	}
 
 	/**
 	 * @return the listOfEmployees
@@ -52,7 +87,9 @@ public class EmployeeTableModel extends AbstractTableModel {
 		} else if (columnIndex == Employee.Field.ID.getFieldId()) {
 			return listOfEmployees.get(rowIndex).getId();
 		} else if (columnIndex == Employee.Field.BIRTH_DATE.getFieldId()) {
-			return listOfEmployees.get(rowIndex).getBirthDate();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/mm/dd");
+			return dateFormat.format(listOfEmployees.get(rowIndex)
+					.getBirthDate());
 		} else if (columnIndex == Employee.Field.EMAIL.getFieldId()) {
 			return listOfEmployees.get(rowIndex).getEmailAddress();
 		} else if (columnIndex == Employee.Field.NAME.getFieldId()) {
@@ -82,11 +119,18 @@ public class EmployeeTableModel extends AbstractTableModel {
 		} else if (columnIndex == Employee.Field.ID.getFieldId()) {
 			listOfEmployees.get(rowIndex).setId((Integer) aValue);
 		} else if (columnIndex == Employee.Field.BIRTH_DATE.getFieldId()) {
-			listOfEmployees.get(rowIndex).setBirthDate((Date) aValue);
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/mm/dd");
+			try {
+				listOfEmployees.get(rowIndex).setBirthDate(
+						dateFormat.parse((String) aValue));
+			} catch (ParseException ex) {
+				ex.printStackTrace();
+			}
 		} else if (columnIndex == Employee.Field.EMAIL.getFieldId()) {
 			try {
 				listOfEmployees.get(rowIndex).setEmailAddress((String) aValue);
-			} catch (InvalidEmailException e) {
+			} catch (InvalidEmailException ex) {
+				ex.printStackTrace();
 			}
 		} else if (columnIndex == Employee.Field.NAME.getFieldId()) {
 			listOfEmployees.get(rowIndex).setName((String) aValue);
@@ -105,6 +149,9 @@ public class EmployeeTableModel extends AbstractTableModel {
 		} else if (columnIndex == Employee.Field.RATE_PER_HOUR.getFieldId()) {
 			listOfEmployees.get(rowIndex).setRatePerHour((Float) aValue);
 		}
+		
+		Employee employeeToUpdate = listOfEmployees.get(rowIndex);
+		controller.updateEmployee(employeeToUpdate);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -114,6 +161,9 @@ public class EmployeeTableModel extends AbstractTableModel {
 
 	@Override
 	public boolean isCellEditable(int row, int column) {
+		if (column == Employee.Field.ID.getFieldId()) {
+			return false;
+		}
 		return true;
 	}
 }

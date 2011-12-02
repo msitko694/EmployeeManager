@@ -34,7 +34,26 @@ public class Employee {
 	 * @version 1.0
 	 */
 	public enum Gender {
-		MALE, FEMALE
+		MALE(0), FEMALE(1);
+		
+		private int intValue;
+		private Gender(int value) {
+			this.intValue = value;
+		}
+		/**
+		 * @return the intValue
+		 */
+		public int getIntValue() {
+			return intValue;
+		}
+		/**
+		 * @param intValue the intValue to set
+		 */
+		public void setIntValue(int intValue) {
+			this.intValue = intValue;
+		}
+		
+		
 	}
 
 	/**
@@ -65,7 +84,7 @@ public class Employee {
 	 * contain 11 digits number
 	 */
 	long pesel;
-	int id;
+	long id;
 	String name, surname;
 	String phoneNumber;
 	String emailAddress;
@@ -228,7 +247,7 @@ public class Employee {
 	 * 
 	 * @return id of employee
 	 */
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -237,7 +256,7 @@ public class Employee {
 	 * @param id
 	 *            id of employee
 	 */
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -263,10 +282,10 @@ public class Employee {
 	 * @param birthDate
 	 *            Sets birth date of employee from string in format (dd/mm/yyyy)
 	 * @throws ParseException
-	 *             if passed date isn't in dd/mm/yyyy format
+	 *             if passed date isn't in yyyy/ format
 	 */
 	public void setBirthDate(String birthDate) throws ParseException {
-		DateFormat format = new SimpleDateFormat("dd/mm/yyyy");
+		DateFormat format = new SimpleDateFormat("yyyy/mm/dd");
 		this.birthDate = format.parse(birthDate);
 	}
 
