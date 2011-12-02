@@ -134,12 +134,16 @@ public class EmployeeSwingController {
 					.getValueAt(it, Employee.Field.ID.getFieldId());
 			dao.deleteEmployee(id);
 		}
+		try{
 		tableModel
 				.getListOfEmployees()
 				.subList(selectedRows[0],
 						selectedRows[selectedRows.length - 1] + 1).clear();
 		tableModel.fireTableRowsDeleted(selectedRows[0],
-				selectedRows[selectedRows.length - 1] + 1);
+				selectedRows[selectedRows.length - 1]);
+		}catch (Exception ex) {
+			System.out.println(selectedRows.length);
+		}
 	}
 
 	/**

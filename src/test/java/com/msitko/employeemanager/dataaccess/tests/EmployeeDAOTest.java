@@ -6,6 +6,7 @@ package com.msitko.employeemanager.dataaccess.tests;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -60,6 +61,8 @@ public class EmployeeDAOTest {
 			// given
 			IEmployeeDAO dao = new EmployeeDAO();
 			dao.createNewDb();
+			dao.setConnection(DriverManager.getConnection(dao
+					.getConnectionString()));
 			Statement statement = dao.getConnection().createStatement();
 			ResultSet resultSet = statement
 					.executeQuery("Select tbl_name from sqlite_master Where tbl_name = 'Employees'");
@@ -151,13 +154,14 @@ public class EmployeeDAOTest {
 		Employee result = dao.findEmployeeById(updatingEmployee.getId());
 		// then
 		assertEquals("updatedName", result.getName());
-		
+
 		dao.getConnection().close();
 	}
 
 	@Test
 	public void testFindAll() throws InvalidPhoneNumberException,
-			InvalidPeselException, InvalidEmailException, ParseException, SQLException {
+			InvalidPeselException, InvalidEmailException, ParseException,
+			SQLException {
 		// given
 		IEmployeeDAO dao = new EmployeeDAO();
 		Employee newEmployee = new Employee();
@@ -175,7 +179,7 @@ public class EmployeeDAOTest {
 		ArrayList<Employee> resultList = dao.findAll();
 		// then
 		assertTrue(resultList.size() >= 2);
-		
+
 		dao.getConnection().close();
 	}
 }

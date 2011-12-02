@@ -1,17 +1,17 @@
 package com.msitko.employeemanager.views;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -51,6 +51,9 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 		buildedView.setController(controller);
 	}
 
+	/**
+	 * Build frame of main application
+	 */
 	@Override
 	public void buildFrame() {
 		buildedView.setMainFrame(new JFrame("Pracownicy"));
@@ -59,6 +62,9 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 		buildedView.getMainFrame().setSize(800, 600);
 	}
 
+	/**
+	 * Build menu strip of main application
+	 */
 	@Override
 	public void buildMenu() {
 		JMenuBar menuBar = new JMenuBar();
@@ -75,11 +81,23 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 		fileMenu.add(exit);
 		menuBar.add(fileMenu);
 		JMenu helpMenu = new JMenu("Pomoc");
-		helpMenu.add("O programie");
+		JMenuItem aboutProgram = new JMenuItem("O programie");
+		helpMenu.add(aboutProgram);
+		aboutProgram.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog((Component) e.getSource(),
+						"Program autorstwa Marcina Sitko =) xD :P.");
+			}
+		});
 		menuBar.add(helpMenu);
 		buildedView.getMainFrame().setJMenuBar(menuBar);
 	}
 
+	/**
+	 * Method build tool bar of main application
+	 */
 	@Override
 	public void buildToolBar() {
 		JToolBar toolBar = new JToolBar();
@@ -89,22 +107,24 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 		final JTextField txtSearchField = new JTextField();
 		txtSearchField.setPreferredSize(new Dimension(150, 0));
 		txtSearchField.addCaretListener(new CaretListener() {
-			
+
 			@Override
 			public void caretUpdate(CaretEvent e) {
-				buildedView.getController().applyFilter(txtSearchField.getText());	
+				buildedView.getController().applyFilter(
+						txtSearchField.getText());
 			}
 		});
-		
+
 		JButton clearButton = new JButton();
 		clearButton.setText("Wyczyść");
-		clearButton.addMouseListener(new MouseAdapter() {
+		clearButton.addActionListener(new ActionListener() {
+
 			@Override
-			public void mouseClicked(MouseEvent e){
+			public void actionPerformed(ActionEvent e) {
 				txtSearchField.setText("");
 			}
 		});
-		
+
 		toolBar.add(txtSearchField);
 		toolBar.add(clearButton);
 
@@ -116,6 +136,9 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 				.add(toolPanel, BorderLayout.NORTH);
 	}
 
+	/**
+	 * Build component JTable to display employees
+	 */
 	@Override
 	public void buildComponent() {
 		buildedView.setAllEmployeesTable(new JTable());
@@ -125,8 +148,9 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 		buildedView.getController().setTableModel(dataModel);
 		buildedView.getAllEmployeesTable().setModel(dataModel);
 		buildedView.getController().loadAllEmployees();
-		
-		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(dataModel);
+
+		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(
+				dataModel);
 		buildedView.getAllEmployeesTable().setRowSorter(sorter);
 		dataModel.setSorter(sorter);
 
@@ -174,6 +198,9 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 				.add(buildedView.getTabbedPane(), BorderLayout.CENTER);
 	}
 
+	/**
+	 * Build buttons which are used to creating and deleting employees
+	 */
 	@Override
 	public void buildButtons() {
 		JPanel buttonsPanel = new JPanel();
@@ -182,9 +209,10 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 		buttonsPanel.setLayout(flowLayout);
 
 		JButton butNew = new JButton();
-		butNew.addMouseListener(new MouseAdapter() {
+		butNew.addActionListener(new ActionListener() {
+
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void actionPerformed(ActionEvent e) {
 				buildedView.getController().newEmployeeTab();
 			}
 		});
@@ -193,9 +221,10 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 		buildedView.setButNew(butNew);
 
 		JButton butDelete = new JButton();
-		butDelete.addMouseListener(new MouseAdapter() {
+		butDelete.addActionListener(new ActionListener() {
+
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void actionPerformed(ActionEvent e) {
 				int selectedRows[] = buildedView.getAllEmployeesTable()
 						.getSelectedRows();
 				buildedView.getController().deleteEmployee(selectedRows);
@@ -209,6 +238,9 @@ public class EmployeeStandardBuilder implements IEmployeeGuiBuilder {
 				.add(buttonsPanel, BorderLayout.SOUTH);
 	}
 
+	/**
+	 * @return instance of createdWindow
+	 */
 	@Override
 	public EmployeeGuiView getCreatedWindow() {
 		return buildedView;

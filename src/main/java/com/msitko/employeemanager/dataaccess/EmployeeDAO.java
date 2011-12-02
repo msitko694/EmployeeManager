@@ -41,6 +41,40 @@ import com.msitko.employeemanager.models.Employee;
 public class EmployeeDAO implements IEmployeeDAO {
 
 	Connection connection;
+	String connectionString;
+	String jdbcClassName;
+
+	/**
+	 * @return the connectionString
+	 */
+	@Override
+	public String getConnectionString() {
+		return connectionString;
+	}
+
+	/**
+	 * @param connectionString
+	 *            the connectionString to set
+	 */
+	@Override
+	public void setConnectionString(String connectionString) {
+		this.connectionString = connectionString;
+	}
+
+	/**
+	 * @return the jdbcClassName
+	 */
+	public String getJdbcClassName() {
+		return jdbcClassName;
+	}
+
+	/**
+	 * @param jdbcClassName
+	 *            the jdbcClassName to set
+	 */
+	public void setJdbcClassName(String jdbcClassName) {
+		this.jdbcClassName = jdbcClassName;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -84,10 +118,10 @@ public class EmployeeDAO implements IEmployeeDAO {
 			Document dbXml = docBuilder.parse(cfgConnectionFile);
 			NodeList nodeList = dbXml.getDocumentElement()
 					.getElementsByTagName("jdbcClassName");
-			String jdbcClassName = nodeList.item(0).getTextContent();
+			jdbcClassName = nodeList.item(0).getTextContent();
 			nodeList = dbXml.getDocumentElement().getElementsByTagName(
 					"connectionString");
-			String connectionString = nodeList.item(0).getTextContent();
+			connectionString = nodeList.item(0).getTextContent();
 
 			Class.forName(jdbcClassName);
 			connection = DriverManager.getConnection(connectionString);
@@ -105,6 +139,14 @@ public class EmployeeDAO implements IEmployeeDAO {
 			System.out.println("Nie znaleziono sterownika klasy jdbc");
 		} catch (SQLException ex) {
 			ex.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -116,6 +158,7 @@ public class EmployeeDAO implements IEmployeeDAO {
 	@Override
 	public void createNewDb() {
 		try {
+			connection = DriverManager.getConnection(connectionString);
 			Statement statement = connection.createStatement();
 			ResultSet resultSet = statement
 					.executeQuery("select tbl_name from sqlite_master where tbl_name = 'Employees'");
@@ -126,6 +169,14 @@ public class EmployeeDAO implements IEmployeeDAO {
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -185,6 +236,7 @@ public class EmployeeDAO implements IEmployeeDAO {
 	@Override
 	public void createEmployee(Employee newEmployee) {
 		try {
+			connection = DriverManager.getConnection(connectionString);
 			PreparedStatement preparedStatement = connection
 					.prepareStatement("INSERT INTO Employees (name, surname, pesel, phoneNumber, emailAddress, "
 							+ "ratePerHour, birthDate, gender) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -209,6 +261,14 @@ public class EmployeeDAO implements IEmployeeDAO {
 			resultSet.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -221,6 +281,7 @@ public class EmployeeDAO implements IEmployeeDAO {
 	@Override
 	public Employee findEmployeeById(long id) throws NoEmployeeException,
 			SQLException {
+		connection = DriverManager.getConnection(connectionString);
 		PreparedStatement statement = connection
 				.prepareStatement("Select rowid, name, surname, pesel, phoneNumber, emailAddress, "
 						+ "ratePerHour, birthDate, gender From Employees Where rowid = ?");
@@ -254,6 +315,9 @@ public class EmployeeDAO implements IEmployeeDAO {
 		} else {
 			readedEmployee.setGender(Employee.Gender.FEMALE);
 		}
+		if (connection != null) {
+			connection.close();
+		}
 		resultSet.close();
 		return readedEmployee;
 	}
@@ -267,12 +331,21 @@ public class EmployeeDAO implements IEmployeeDAO {
 	@Override
 	public void deleteEmployee(long id) {
 		try {
+			connection = DriverManager.getConnection(connectionString);
 			PreparedStatement statement = connection
 					.prepareStatement("Delete From Employees Where rowid = ? ");
 			statement.setLong(1, id);
 			statement.executeUpdate();
 		} catch (SQLException ex) {
 			ex.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -285,6 +358,7 @@ public class EmployeeDAO implements IEmployeeDAO {
 	 */
 	@Override
 	public void updateEmployee(Employee updatingEmployee) throws SQLException {
+		connection = DriverManager.getConnection(connectionString);
 		PreparedStatement preparedStatement = connection
 				.prepareStatement("UPDATE Employees SET name= ?, surname= ?, pesel= ?, "
 						+ "phoneNumber= ?, emailAddress=?, ratePerHour= ?, birthDate= ?, gender = ? "
@@ -299,9 +373,13 @@ public class EmployeeDAO implements IEmployeeDAO {
 		preparedStatement.setFloat(6, updatingEmployee.getRatePerHour());
 		preparedStatement.setDate(7, new java.sql.Date(updatingEmployee
 				.getBirthDate().getTime()));
-		preparedStatement.setLong(8, updatingEmployee.getGender().getIntValue());
+		preparedStatement
+				.setLong(8, updatingEmployee.getGender().getIntValue());
 		preparedStatement.setLong(9, updatingEmployee.getId());
 		preparedStatement.executeUpdate();
+		if(connection != null){
+			connection.close();
+		}
 	}
 
 	/*
@@ -311,6 +389,7 @@ public class EmployeeDAO implements IEmployeeDAO {
 	 */
 	@Override
 	public ArrayList<Employee> findAll() throws SQLException {
+		connection = DriverManager.getConnection(connectionString);
 		PreparedStatement statement = connection
 				.prepareStatement("Select rowid, name, surname, pesel, phoneNumber, emailAddress, "
 						+ "ratePerHour, birthDate, gender From Employees");
@@ -339,13 +418,17 @@ public class EmployeeDAO implements IEmployeeDAO {
 			readedEmployee.setRatePerHour(resultSet.getFloat("ratePerHour"));
 			readedEmployee.setBirthDate(resultSet.getDate("birthDate"));
 			readedEmployee.setBirthDate(resultSet.getDate("birthDate"));
-			if (resultSet.getInt("gender") == Employee.Gender.MALE.getIntValue()) {
+			if (resultSet.getInt("gender") == Employee.Gender.MALE
+					.getIntValue()) {
 				readedEmployee.setGender(Employee.Gender.MALE);
 			} else {
 				readedEmployee.setGender(Employee.Gender.FEMALE);
 			}
-			
+
 			resultList.add(readedEmployee);
+		}
+		if (connection != null) {
+			connection.close();
 		}
 		resultSet.close();
 		return resultList;
