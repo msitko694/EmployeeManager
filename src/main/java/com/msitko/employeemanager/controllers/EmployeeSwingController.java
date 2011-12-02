@@ -7,7 +7,6 @@ import javax.swing.RowFilter;
 import com.msitko.employeemanager.dataaccess.IEmployeeDAO;
 import com.msitko.employeemanager.models.Employee;
 import com.msitko.employeemanager.models.EmployeeTableModel;
-import com.msitko.employeemanager.views.EmployeeConsoleView;
 import com.msitko.employeemanager.views.EmployeeGuiView;
 import com.msitko.employeemanager.views.NewEmployeeView;
 
