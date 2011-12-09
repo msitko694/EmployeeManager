@@ -52,12 +52,12 @@ public class EmployeeTest {
 	@Test
 	public void testGetAgeOneDayBeforeBirthdays() {
 		// given
-		Employee empl = new Employee();
+		Employee employee = new Employee();
 		GregorianCalendar birthCalendar = new GregorianCalendar(1990, 2, 14);
-		empl.setBirthDate(birthCalendar.getTime());
+		employee.setBirthDate(birthCalendar.getTime());
 		GregorianCalendar mockActualDate = new GregorianCalendar(2010, 2, 13);
 		// when
-		int age = empl.getAge(mockActualDate);
+		int age = employee.getAge(mockActualDate);
 		// then
 		assertEquals(19, age);
 	}
@@ -69,12 +69,12 @@ public class EmployeeTest {
 	@Test
 	public void testGetAgeAtBirthdays() {
 		// given
-		Employee empl = new Employee();
+		Employee employee = new Employee();
 		GregorianCalendar birthCalendar = new GregorianCalendar(1990, 2, 14);
-		empl.setBirthDate(birthCalendar.getTime());
+		employee.setBirthDate(birthCalendar.getTime());
 		GregorianCalendar mockActualDate = new GregorianCalendar(2010, 2, 14);
 		// when
-		int age = empl.getAge(mockActualDate);
+		int age = employee.getAge(mockActualDate);
 		// then
 		assertEquals(20, age);
 	}
@@ -85,11 +85,11 @@ public class EmployeeTest {
 	@Test
 	public void testSettingValidPesel() {
 		// given
-		Employee empl = new Employee();
+		Employee employeepl = new Employee();
 		long pesel = 90021416955L;
 		try {
 			// when
-			empl.setPesel(pesel);
+			employeepl.setPesel(pesel);
 			// then
 		} catch (InvalidPeselException ex) {
 			fail();
@@ -102,11 +102,11 @@ public class EmployeeTest {
 	@Test
 	public void testSettingInvalidPesel() {
 		// given
-		Employee empl = new Employee();
+		Employee employee = new Employee();
 		long pesel = 90021416956L;
 		try {
 			// when
-			empl.setPesel(pesel);
+			employee.setPesel(pesel);
 			// then
 			fail();
 		} catch (InvalidPeselException ex) {
@@ -119,11 +119,11 @@ public class EmployeeTest {
 	@Test
 	public void testSettingValidPhone() {
 		// given
-		Employee empl = new Employee();
+		Employee employee = new Employee();
 		String phoneNumber = "+(48) 32 421 312";
 		try {
 			// when
-			empl.setPhoneNumber(phoneNumber);
+			employee.setPhoneNumber(phoneNumber);
 			// then
 		} catch (InvalidPhoneNumberException ex) {
 			fail();
@@ -136,11 +136,11 @@ public class EmployeeTest {
 	@Test
 	public void testSettingInvalidPhone() {
 		// given
-		Employee empl = new Employee();
+		Employee employee = new Employee();
 		String phoneNumber = "+(48) 32a 421 312";
 		try {
 			// when
-			empl.setPhoneNumber(phoneNumber);
+			employee.setPhoneNumber(phoneNumber);
 			// then
 			fail();
 		} catch (InvalidPhoneNumberException ex) {
@@ -150,11 +150,11 @@ public class EmployeeTest {
 	@Test
 	public void testGettingEmailAddress() throws InvalidEmailException {
 		// given
-		Employee empl = new Employee();
+		Employee employee = new Employee();
 		String arg = "tested.email@te4st.testtest.pl";
-		empl.setEmailAddress(arg);
+		employee.setEmailAddress(arg);
 		// when
-		String gotEmail = empl.getEmailAddress();
+		String gotEmail = employee.getEmailAddress();
 		// then
 		assertEquals(arg, gotEmail);
 
@@ -163,11 +163,11 @@ public class EmployeeTest {
 	@Test
 	public void testEmailHasTooLongEnddomain() {
 		// given
-		Employee empl = new Employee();
+		Employee employee = new Employee();
 		String arg = "tested.email@te4st.test.pltoolongdomain";
 		try {
 			// when
-			empl.setEmailAddress(arg);
+			employee.setEmailAddress(arg);
 			// then
 			fail();
 		} catch (InvalidEmailException ex) {
@@ -177,11 +177,11 @@ public class EmployeeTest {
 	@Test
 	public void testEmailContainIllegalChars() {
 		// given
-		Employee empl = new Employee();
+		Employee employee = new Employee();
 		String arg = "te\\\'sted.email@te4st.test.pl";
 		try {
 			// when
-			empl.setEmailAddress(arg);
+			employee.setEmailAddress(arg);
 			// then
 			fail();
 		} catch (InvalidEmailException ex) {
@@ -191,12 +191,12 @@ public class EmployeeTest {
 	@Test
 	public void testGetBirthDate() {
 		// given
-		Employee empl = new Employee();
+		Employee employee = new Employee();
 		java.util.Date passedDate = (new GregorianCalendar(1990, 2, 14))
 				.getTime();
-		empl.setBirthDate(passedDate);
+		employee.setBirthDate(passedDate);
 		// when
-		java.util.Date returnedDate = empl.getBirthDate();
+		java.util.Date returnedDate = employee.getBirthDate();
 		// then
 		assertEquals(passedDate, returnedDate);
 	}
@@ -204,11 +204,11 @@ public class EmployeeTest {
 	@Test
 	public void testGetEmail() throws InvalidEmailException {
 		// given
-		Employee empl = new Employee();
+		Employee employee = new Employee();
 		String passedEmail = "testedemail@gmail.com";
-		empl.setEmailAddress(passedEmail);
+		employee.setEmailAddress(passedEmail);
 		// when
-		String returnedEmail = empl.getEmailAddress();
+		String returnedEmail = employee.getEmailAddress();
 		// then
 		assertEquals(passedEmail, returnedEmail);
 	}
@@ -216,10 +216,10 @@ public class EmployeeTest {
 	@Test
 	public void testGetGender() throws ParseGenderException {
 		// given
-		Employee empl = new Employee();
-		empl.setGender('k');
+		Employee employee = new Employee();
+		employee.setGender('k');
 		// when
-		Employee.Gender gend = empl.getGender();
+		Employee.Gender gend = employee.getGender();
 		// then
 		assertEquals(Employee.Gender.FEMALE, gend);
 	}
@@ -227,11 +227,11 @@ public class EmployeeTest {
 	@Test
 	public void testGetName() {
 		// given
-		Employee empl = new Employee();
+		Employee employee = new Employee();
 		String passedName = "Marcin";
-		empl.setName(passedName);
+		employee.setName(passedName);
 		// when;
-		String returnedName = empl.getName();
+		String returnedName = employee.getName();
 		// then
 		assertEquals(passedName, returnedName);
 	}
@@ -239,10 +239,10 @@ public class EmployeeTest {
 	@Test
 	public void testGetSurname() {
 		// given
-		Employee instance = new Employee();
-		instance.setSurname("Kowalski");
+		Employee employee = new Employee();
+		employee.setSurname("Kowalski");
 		// when
-		String resultSurname = instance.getSurname();
+		String resultSurname = employee.getSurname();
 		// then
 		assertEquals("Kowalski", resultSurname);
 	}
@@ -250,11 +250,11 @@ public class EmployeeTest {
 	@Test
 	public void testGetPesel() throws InvalidPeselException {
 		// given
-		Employee empl = new Employee();
+		Employee employee = new Employee();
 		long passedPesel = 90021416955L;
-		empl.setPesel(passedPesel);
+		employee.setPesel(passedPesel);
 		// when
-		long returnedPesel = empl.getPesel();
+		long returnedPesel = employee.getPesel();
 		// then
 		assertEquals(passedPesel, returnedPesel);
 	}
@@ -262,10 +262,10 @@ public class EmployeeTest {
 	@Test
 	public void testGetRatePerHour() {
 		// given
-		Employee instance = new Employee();
-		instance.setRatePerHour(45.123456f);
+		Employee employee = new Employee();
+		employee.setRatePerHour(45.123456f);
 		// when
-		float resultPerHour = instance.getRatePerHour();
+		float resultPerHour = employee.getRatePerHour();
 		// then
 		assertEquals(45.123456f, resultPerHour, 0.001);
 	}
@@ -273,10 +273,10 @@ public class EmployeeTest {
 	@Test
 	public void testGetId() {
 		// given
-		Employee instance = new Employee();
-		instance.setId(4);
+		Employee employee = new Employee();
+		employee.setId(4);
 		// when
-		long resultId = instance.getId();
+		long resultId = employee.getId();
 		// then
 		assertEquals(4, resultId);
 	}

@@ -4,7 +4,6 @@
  */
 package com.msitko.employeemanager.models;
 
-import com.msitko.employeemanager.dataaccess.EmployeeRepository;
 import com.msitko.employeemanager.exceptions.InvalidEmailException;
 import com.msitko.employeemanager.exceptions.InvalidPeselException;
 import com.msitko.employeemanager.exceptions.InvalidPhoneNumberException;
@@ -35,25 +34,28 @@ public class Employee {
 	 */
 	public enum Gender {
 		MALE(0), FEMALE(1);
-		
+
 		private int intValue;
+
 		private Gender(int value) {
 			this.intValue = value;
 		}
+
 		/**
 		 * @return the intValue
 		 */
 		public int getIntValue() {
 			return intValue;
 		}
+
 		/**
-		 * @param intValue the intValue to set
+		 * @param intValue
+		 *            the intValue to set
 		 */
 		public void setIntValue(int intValue) {
 			this.intValue = intValue;
 		}
-		
-		
+
 	}
 
 	/**
@@ -361,6 +363,9 @@ public class Employee {
 		this.surname = surname;
 	}
 
+	/**
+	 * Get string representation of employee
+	 */
 	@Override
 	public String toString() {
 		String genderName = null;
@@ -404,6 +409,13 @@ public class Employee {
 		this.phoneNumber = phoneNumber;
 	}
 
+	/**
+	 * Method validate phone number
+	 * 
+	 * @param phoneNumber
+	 *            to validate
+	 * @throws InvalidPhoneNumberException
+	 */
 	public void validatePhoneNumber(String phoneNumber)
 			throws InvalidPhoneNumberException {
 		Pattern phonePatter = Pattern.compile("^[+]??[\\-()\\s0-9]+$");

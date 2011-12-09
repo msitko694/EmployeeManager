@@ -56,8 +56,7 @@ public class EmployeeDAOTest {
 	}
 
 	@Test
-	public void testCreateNewDb() {
-		try {
+	public void testCreateNewDb() throws SQLException {
 			// given
 			IEmployeeDAO dao = new EmployeeDAO();
 			dao.createNewDb();
@@ -72,10 +71,6 @@ public class EmployeeDAOTest {
 			// then
 			assertEquals("Employees", result);
 			dao.getConnection().close();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			fail();
-		}
 	}
 
 	@Test

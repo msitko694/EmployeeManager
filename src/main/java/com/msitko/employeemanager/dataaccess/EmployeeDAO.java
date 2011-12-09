@@ -377,7 +377,7 @@ public class EmployeeDAO implements IEmployeeDAO {
 				.setLong(8, updatingEmployee.getGender().getIntValue());
 		preparedStatement.setLong(9, updatingEmployee.getId());
 		preparedStatement.executeUpdate();
-		if(connection != null){
+		if (connection != null) {
 			connection.close();
 		}
 	}
